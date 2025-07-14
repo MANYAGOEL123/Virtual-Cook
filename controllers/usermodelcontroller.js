@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 
 // ✅ Generate JWT Token
 const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, "your_jwt_secret", {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
     expiresIn: "7d"
   });
 };
@@ -18,7 +18,7 @@ export const registerUser = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
-
+    console.log("error removed");
     const newUser = new User({
       username,
       email,

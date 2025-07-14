@@ -2,7 +2,6 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
-
 import recipeRoutes from './routes/recipeRoutes.js';
 import videoRoutes from './routes/videostreamingroutes.js';
 import commentRoutes from './routes/commentroutes.js';
@@ -56,7 +55,6 @@ app.use('/api/recipe-ingredients', recipeingredientRoutes);
 app.use('/api/recipe-tags', recipetagRoutes);
 app.use('/api/recipe-tag-mappings', recipetagmappingRoutes);
 app.use('/api/user-pantry', userpantryRoutes);
-
 app.get('/', (req, res) => {
   res.send('🌐 API is running...');
 });
