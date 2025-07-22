@@ -1,6 +1,7 @@
 "use client"
 
 import { ChefHat, Star, Users, Clock } from "lucide-react"
+import Link from "next/link"
 
 export default function LandingPage({ onNavigate }) {
   return (
@@ -19,18 +20,12 @@ export default function LandingPage({ onNavigate }) {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => onNavigate("login")}
-                className="px-8 py-4 bg-[#FF6B6B] text-white rounded-full text-lg font-semibold hover:bg-[#FF6B6B]/90 transition-colors shadow-lg"
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => onNavigate("signup")}
-                className="px-8 py-4 bg-[#4ECDC4] text-white rounded-full text-lg font-semibold hover:bg-[#4ECDC4]/90 transition-colors shadow-lg"
-              >
-                Sign Up
-              </button>
+              <Link href="/login">
+                <button className="px-8 py-4 bg-[#FF6B6B] text-white rounded-full text-lg font-semibold hover:bg-[#FF6B6B]/90 transition-colors shadow-lg">Sign In</button>
+              </Link>
+              <Link href="/signup">
+                <button className="px-8 py-4 bg-[#4ECDC4] text-white rounded-full text-lg font-semibold hover:bg-[#4ECDC4]/90 transition-colors shadow-lg">Sign Up</button>
+              </Link>
             </div>
           </div>
         </div>
