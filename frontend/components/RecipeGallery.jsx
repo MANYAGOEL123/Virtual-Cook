@@ -2,10 +2,10 @@
 import { useEffect, useState } from "react"
 import RecipeCard from "./RecipeCard"
 import { Search } from "lucide-react"
+import { useRouter } from "next/navigation"
 
-
-
-export default function RecipeGallery({ onRecipeSelect, onNavigate }) {
+export default function RecipeGallery({ onRecipeSelect}) {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [recipes, setRecipes] = useState([]) // ✅ you missed this
@@ -35,9 +35,8 @@ export default function RecipeGallery({ onRecipeSelect, onNavigate }) {
   )
 
   const handleRecipeClick = (recipe) => {
-    onRecipeSelect(recipe)
-    onNavigate("recipe-detail")
-  }
+  router.push(`/recipes/${recipe._id}`)
+}
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
