@@ -2,9 +2,12 @@
 import axios from "axios"
 import { useState } from "react"
 import { ChefHat, Mail, Lock } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 
-export default function LoginPage({ onNavigate, onLogin }) {
+export default function LoginPage() {
   const BACKEND_API = process.env.NEXT_PUBLIC_BACKEND_CALL;
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -16,16 +19,9 @@ const handleSubmit = async (e) => {
       email: formData.email,
       password: formData.password,
     })
-
-    // Assuming your backend sends back a token or user data
     const { token, user } = response.data
-
-    // Optionally store token in localStorage
     localStorage.setItem("token", token)
-
-    // Trigger your login handler
-    onLogin(user)  // Pass user if needed
-
+    router.push("/recipes") // Redirect to dashboard or home page after login
   } catch (error) {
     console.error("Login error:", error)
     alert(
@@ -103,12 +99,9 @@ const handleSubmit = async (e) => {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               Don't have an account?{" "}
-              <button
-                onClick={() => onNavigate("login")}
-                className="text-[#4ECDC4] hover:text-[#4ECDC4]/80 font-semibold"
-              >
-                Sign up here
-              </button>
+              <Link href="/signup">
+                <button className="text-[#4ECDC4] hover:text-[#4ECDC4]/80 font-semibold">Sign up here</button>
+              </Link>
             </p>
           </div>
         </div>
