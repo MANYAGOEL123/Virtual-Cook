@@ -1,132 +1,148 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { ArrowLeft, Heart, MessageCircle, Star, Clock, Users, ChefHat } from "lucide-react"
 
-export default function RecipeDetail({ recipe, onBack }) {
+export default function RecipeDetail({ recipeId, onBack }) {
+  const [recipe, setRecipe] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [rating, setRating] = useState(0)
   const [comment, setComment] = useState("")
-  const [comments, setComments] = useState([
-    { id: 1, user: "Sarah M.", text: "Amazing recipe! My family loved it.", rating: 5 },
-    { id: 2, user: "John D.", text: "Easy to follow instructions. Will make again!", rating: 4 },
-  ])
+  const [comments, setComments] = useState([])
 
-  const ingredients = [
-    "2 cups Arborio rice",
-    "6 cups warm chicken broth",
-    "1 lb mixed mushrooms, sliced",
-    "1 medium onion, diced",
-    "3 cloves garlic, minced",
-    "1/2 cup white wine",
-    "1/2 cup grated Parmesan cheese",
-    "2 tbsp butter",
-    "2 tbsp olive oil",
-    "Salt and pepper to taste",
-    "Fresh parsley for garnish",
-  ]
-
-  const instructions = [
-    "Heat olive oil in a large pan over medium heat. Add mushrooms and cook until golden.",
-    "In a separate pot, heat the chicken broth and keep it warm.",
-    "Add onion to the mushroom pan and cook until translucent.",
-    "Add garlic and rice, stirring for 2 minutes until rice is lightly toasted.",
-    "Pour in white wine and stir until absorbed.",
-    "Add warm broth one ladle at a time, stirring constantly until absorbed.",
-    "Continue until rice is creamy and tender, about 18-20 minutes.",
-    "Stir in butter and Parmesan cheese. Season with salt and pepper.",
-    "Garnish with fresh parsley and serve immediately.",
-  ]
-
-  const handleCommentSubmit = (e) => {
-    e.preventDefault()
-    if (comment.trim() && rating > 0) {
-      setComments([
-        ...comments,
-        {
-          id: comments.length + 1,
-          user: "You",
-          text: comment,
-          rating: rating,
-        },
-      ])
-      setComment("")
-      setRating(0)
+  useEffect(() => {
+    const fetchRecipe = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/recipes/${recipeId}`)
+        if (!res.ok) throw new Error("Failed to fetch recipe.")
+        const data = await res.json()
+        setRecipe(data)
+        setComments(data.comments || [])  // assuming comments come from backend
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
     }
-  }
 
+    if (recipeId) fetchRecipe()
+  }, [recipeId])
+
+  const handleCommentSubmit = async (e) => {
+  e.preventDefault()
+
+  if (!comment.trim() || rating === 0) return
+
+  const token = localStorage.getItem("token") // assumes JWT is stored in localStorage
+
+  try {
+    const response = await fetch("http://localhost:5000/api/comments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // 🔐 required by your `protect` middleware
+      },
+      body: JSON.stringify({
+        entityType: "recipe",
+        entityId: recipeId,
+        text: comment,
+        rating,
+      }),
+    })
+
+    if (!response.ok) throw new Error("Failed to post comment")
+
+    const newComment = await response.json()
+
+    // Add new comment to UI
+    setComments([
+      ...comments,
+      {
+        id: newComment._id,
+        user: "You", // replace with actual user name if available
+        text: newComment.text,
+        rating: newComment.rating,
+      },
+    ])
+
+    setComment("")
+    setRating(0)
+  } catch (err) {
+    console.error(err)
+    alert("Failed to post comment. Please try again.")
+  }
+}
+
+
+  if (loading) return <p className="text-center py-8">Loading...</p>
+  if (error) return <p className="text-center text-red-500 py-8">{error}</p>
   if (!recipe) return null
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
       <button onClick={onBack} className="flex items-center space-x-2 text-[#FF6B6B] hover:text-[#FF6B6B]/80 mb-6">
         <ArrowLeft className="h-5 w-5" />
         <span>Back to Recipes</span>
       </button>
 
-      {/* Recipe Header */}
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-        <img src={recipe.image || "/placeholder.svg"} alt={recipe.name} className="w-full h-64 object-cover" />
+        <img src={recipe.imageUrl || "/placeholder.svg"} alt={recipe.title} className="w-full h-64 object-cover" />
         <div className="p-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">{recipe.name}</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">{recipe.title}</h1>
           <p className="text-gray-600 text-lg mb-6">{recipe.description}</p>
 
           <div className="flex flex-wrap gap-6 mb-6">
             <div className="flex items-center space-x-2">
               <Clock className="h-5 w-5 text-[#4ECDC4]" />
-              <span className="font-medium">{recipe.cookTime}</span>
+              <span className="font-medium">{recipe.cookingTime + recipe.prepTime} min</span>
             </div>
             <div className="flex items-center space-x-2">
               <Users className="h-5 w-5 text-[#4ECDC4]" />
-              <span className="font-medium">4 servings</span>
+              <span className="font-medium">{recipe.servings || 4} servings</span>
             </div>
             <div className="flex items-center space-x-2">
               <ChefHat className="h-5 w-5 text-[#4ECDC4]" />
-              <span className="font-medium">{recipe.difficulty}</span>
+              <span className="font-medium">{recipe.difficulty || "Medium"}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Star className="h-5 w-5 text-yellow-400 fill-current" />
-              <span className="font-medium">{recipe.rating}/5</span>
+              <span className="font-medium">{recipe.averageRating || 0}/5</span>
             </div>
           </div>
 
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2 text-gray-500">
               <Heart className="h-5 w-5" />
-              <span>{recipe.likes} likes</span>
+              <span>{recipe.totalLikes} likes</span>
             </div>
             <div className="flex items-center space-x-2 text-gray-500">
               <MessageCircle className="h-5 w-5" />
-              <span>{recipe.comments} comments</span>
+              <span>{comments.length} comments</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Video Tutorial */}
+      {/* Video Tutorial Placeholder */}
       <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">Video Tutorial</h2>
         <div className="aspect-video bg-gray-200 rounded-xl flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-[#FF6B6B] rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-              </svg>
-            </div>
-            <p className="text-gray-600">Click to play video tutorial</p>
-          </div>
+          <p className="text-gray-600">Video coming soon...</p>
         </div>
       </div>
 
+      {/* Ingredients */}
       <div className="grid md:grid-cols-2 gap-8 mb-8">
-        {/* Ingredients */}
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Ingredients</h2>
           <ul className="space-y-3">
-            {ingredients.map((ingredient, index) => (
+            {recipe.ingredients.map((ingredient, index) => (
               <li key={index} className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-[#4ECDC4] rounded-full"></div>
-                <span className="text-gray-700">{ingredient}</span>
+                <span className="text-gray-700">
+                  {ingredient.quantity} {ingredient.name}
+                </span>
               </li>
             ))}
           </ul>
@@ -136,7 +152,7 @@ export default function RecipeDetail({ recipe, onBack }) {
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Instructions</h2>
           <ol className="space-y-4">
-            {instructions.map((instruction, index) => (
+            {recipe.instructions.map((instruction, index) => (
               <li key={index} className="flex space-x-4">
                 <div className="flex-shrink-0 w-8 h-8 bg-[#FF6B6B] text-white rounded-full flex items-center justify-center text-sm font-bold">
                   {index + 1}
@@ -152,7 +168,7 @@ export default function RecipeDetail({ recipe, onBack }) {
       <div className="bg-white rounded-2xl shadow-lg p-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Comments & Reviews</h2>
 
-        {/* Add Comment Form */}
+        {/* Add Comment */}
         <form onSubmit={handleCommentSubmit} className="mb-8 p-6 bg-[#F7FFF7] rounded-xl">
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">Your Rating</label>
