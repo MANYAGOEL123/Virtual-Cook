@@ -2,9 +2,12 @@
 import axios from "axios"
 import { useState } from "react"
 import { ChefHat, User, Mail, Lock } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 
-export default function SignupPage({ onNavigate, onLogin }) {
+export default function SignupPage() {
  const BACKEND_API=process.env.NEXT_PUBLIC_BACKEND_CALL; 
+ const router = useRouter();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -29,7 +32,7 @@ export default function SignupPage({ onNavigate, onLogin }) {
     // If successful
     console.log("User registered:", response.data)
     alert("Signup successful!")
-    onLogin()
+    router.push("/login")
   } catch (error) {
     // Error handling
     console.error("Signup error:", error.response?.data || error.message)
@@ -144,12 +147,9 @@ export default function SignupPage({ onNavigate, onLogin }) {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               Already have an account?{" "}
-              <button
-                onClick={() => onNavigate("login")}
-                className="text-[#FF6B6B] hover:text-[#FF6B6B]/80 font-semibold"
-              >
-                Sign in here
-              </button>
+              <Link href="/login">
+                <button className="text-[#FF6B6B] hover:text-[#FF6B6B]/80 font-semibold">Sign in here</button>
+              </Link>
             </p>
           </div>
         </div>
