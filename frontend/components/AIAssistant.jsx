@@ -3,186 +3,135 @@
 import { useState } from "react"
 import { Brain, Plus, X, Search } from "lucide-react"
 
-export default function AIAssistant({ onRecipeSelect, onNavigate }) {
+export default function AIAssistant() {
+  const [ingredient, setIngredient] = useState("")
   const [ingredients, setIngredients] = useState([])
-  const [currentIngredient, setCurrentIngredient] = useState("")
-  const [suggestedRecipes, setSuggestedRecipes] = useState([])
+  const [suggestedRecipe, setSuggestedRecipe] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
-  const addIngredient = () => {
-    if (currentIngredient.trim() && !ingredients.includes(currentIngredient.trim())) {
-      setIngredients([...ingredients, currentIngredient.trim()])
-      setCurrentIngredient("")
+  const handleAddIngredient = () => {
+    if (ingredient.trim() !== "") {
+      setIngredients([...ingredients, ingredient.trim()])
+      setIngredient("")
     }
   }
 
-  const removeIngredient = (ingredient) => {
-    setIngredients(ingredients.filter((item) => item !== ingredient))
+  const handleRemoveIngredient = (index) => {
+    const updatedIngredients = [...ingredients]
+    updatedIngredients.splice(index, 1)
+    setIngredients(updatedIngredients)
   }
 
-  const findRecipes = async () => {
+  const handleGenerateRecipe = async () => {
     if (ingredients.length === 0) return
 
     setIsLoading(true)
-
-    // Simulate AI processing
-    setTimeout(() => {
-      const mockRecipes = [
-        {
-          id: 1,
-          name: "Quick Vegetable Stir Fry",
-          description: "A healthy and quick stir fry using your available vegetables",
-          image: "/placeholder.svg?height=200&width=300",
-          matchPercentage: 95,
-          missingIngredients: ["soy sauce", "garlic"],
-          cookTime: "15 min",
-        },
-        {
-          id: 2,
-          name: "Creamy Pasta Primavera",
-          description: "Delicious pasta with fresh vegetables and cream sauce",
-          image: "/placeholder.svg?height=200&width=300",
-          matchPercentage: 80,
-          missingIngredients: ["heavy cream", "parmesan cheese"],
-          cookTime: "25 min",
-        },
-        {
-          id: 3,
-          name: "Garden Salad Bowl",
-          description: "Fresh and healthy salad with your available ingredients",
-          image: "/placeholder.svg?height=200&width=300",
-          matchPercentage: 90,
-          missingIngredients: ["olive oil", "lemon"],
-          cookTime: "10 min",
-        },
-      ]
-
-      setSuggestedRecipes(mockRecipes)
-      setIsLoading(false)
-    }, 2000)
+    try {
+      const response = await fetch("http://localhost:8000/generate-recipe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ingredients }),
+      })
+      const data = await response.json()
+      setSuggestedRecipe(data.recipe || "No recipe found.")
+    } catch (error) {
+      setSuggestedRecipe("Error generating recipe.")
+    }
+    setIsLoading(false)
   }
 
-  const handleRecipeClick = (recipe) => {
-    onRecipeSelect(recipe)
-    onNavigate("recipe-detail")
+  const handleChatMessage = async (e) => {
+    if (e.key === "Enter") {
+      const message = e.target.value.trim()
+      if (!message) return
+
+      setIsLoading(true)
+      try {
+        const response = await fetch("http://localhost:8000/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_id: "user1",
+            message: message,
+          }),
+        })
+        const data = await response.json()
+        setSuggestedRecipe(data.response || "No response.")
+      } catch (err) {
+        setSuggestedRecipe("Error talking to assistant.")
+      }
+      e.target.value = ""
+      setIsLoading(false)
+    }
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">AI Cooking Assistant</h1>
-        <p className="text-xl text-gray-600">Tell us what ingredients you have, and we'll suggest perfect recipes</p>
+    <div className="max-w-xl mx-auto mt-10 p-6 border rounded-xl shadow-md bg-white">
+      <h1 className="text-2xl font-bold mb-4 flex items-center gap-2">
+        <Brain className="w-6 h-6 text-purple-600" />
+        Virtual Cook Assistant
+      </h1>
+
+      {/* Ingredient Input Section */}
+      <div className="flex gap-2 mb-4">
+        <input
+          type="text"
+          placeholder="Enter an ingredient"
+          className="flex-1 px-4 py-2 border rounded-xl"
+          value={ingredient}
+          onChange={(e) => setIngredient(e.target.value)}
+        />
+        <button
+          onClick={handleAddIngredient}
+          className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700"
+        >
+          <Plus className="w-4 h-4" />
+        </button>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* Ingredients Input */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            <Brain className="h-6 w-6 text-[#FF6B6B] mr-2" />
-            Your Ingredients
-          </h2>
-
-          <div className="space-y-4">
-            <div className="flex space-x-2">
-              <input
-                type="text"
-                value={currentIngredient}
-                onChange={(e) => setCurrentIngredient(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && addIngredient()}
-                placeholder="Add an ingredient..."
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent outline-none"
-              />
-              <button
-                onClick={addIngredient}
-                className="px-4 py-3 bg-[#4ECDC4] text-white rounded-xl hover:bg-[#4ECDC4]/90 transition-colors"
-              >
-                <Plus className="h-5 w-5" />
-              </button>
-            </div>
-
-            {ingredients.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="font-semibold text-gray-700">Added Ingredients:</h3>
-                <div className="flex flex-wrap gap-2">
-                  {ingredients.map((ingredient, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-3 py-1 bg-[#F7FFF7] text-gray-700 rounded-full text-sm"
-                    >
-                      {ingredient}
-                      <button
-                        onClick={() => removeIngredient(ingredient)}
-                        className="ml-2 text-gray-400 hover:text-red-500"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <button
-              onClick={findRecipes}
-              disabled={ingredients.length === 0 || isLoading}
-              className="w-full py-3 px-4 bg-[#FF6B6B] text-white rounded-xl font-semibold hover:bg-[#FF6B6B]/90 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            >
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Finding Recipes...
-                </>
-              ) : (
-                <>
-                  <Search className="h-5 w-5 mr-2" />
-                  Find Recipes
-                </>
-              )}
+      {/* Selected Ingredients */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {ingredients.map((ing, index) => (
+          <span
+            key={index}
+            className="flex items-center bg-gray-200 px-3 py-1 rounded-full"
+          >
+            {ing}
+            <button onClick={() => handleRemoveIngredient(index)}>
+              <X className="w-4 h-4 ml-2 text-red-500 hover:text-red-700" />
             </button>
-          </div>
-        </div>
-
-        {/* Recipe Suggestions */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Recipe Suggestions</h2>
-
-          {suggestedRecipes.length === 0 ? (
-            <div className="text-center py-12">
-              <Brain className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">Add some ingredients to get recipe suggestions</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {suggestedRecipes.map((recipe) => (
-                <div
-                  key={recipe.id}
-                  onClick={() => handleRecipeClick(recipe)}
-                  className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer"
-                >
-                  <div className="flex space-x-4">
-                    <img
-                      src={recipe.image || "/placeholder.svg"}
-                      alt={recipe.name}
-                      className="w-20 h-20 object-cover rounded-lg"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold text-gray-800">{recipe.name}</h3>
-                        <span className="text-sm font-medium text-[#4ECDC4]">{recipe.matchPercentage}% match</span>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-2">{recipe.description}</p>
-                      <div className="flex items-center justify-between text-xs text-gray-500">
-                        <span>Cook time: {recipe.cookTime}</span>
-                        <span>Missing: {recipe.missingIngredients.join(", ")}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+          </span>
+        ))}
       </div>
+
+      {/* Generate Button */}
+      <button
+        onClick={handleGenerateRecipe}
+        disabled={isLoading}
+        className="bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 w-full mb-6"
+      >
+        <Search className="inline w-4 h-4 mr-2" />
+        {isLoading ? "Generating..." : "Suggest Recipe"}
+      </button>
+
+      {/* Chat Input */}
+      <div className="mb-4">
+        <h3 className="text-gray-700 font-medium mb-1">Ask the Assistant</h3>
+        <input
+          type="text"
+          placeholder='Try saying "hello" or "who are you?"'
+          className="w-full px-4 py-2 border rounded-xl"
+          onKeyDown={handleChatMessage}
+        />
+      </div>
+
+      {/* Output Section */}
+      {suggestedRecipe && (
+        <div className="bg-gray-100 p-4 rounded-xl whitespace-pre-wrap">
+          <strong>Assistant says:</strong>
+          <p>{suggestedRecipe}</p>
+        </div>
+      )}
     </div>
   )
 }
