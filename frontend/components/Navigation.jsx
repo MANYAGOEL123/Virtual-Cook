@@ -8,7 +8,7 @@ export default function Navigation({ currentPage, onNavigate, onLogout }) {
     { id: "diet-planner", label: "Diet Plan", icon: User },
     { id: "meal-planner", label: "Meal Plan", icon: Calendar },
     { id: "ai-assistant", label: "AI Assistant", icon: Brain },
-    { id: "video-sharing", label: "Videos", icon: Video },
+    // { id: "video-sharing", label: "Videos", icon: Video },
   ]
 
   return (
