@@ -8,9 +8,9 @@ import connectDB from './config/db.js';
 import recipeRoutes from './routes/recipeRoutes.js';
 import videoRoutes from './routes/videostreamingroutes.js';
 import commentRoutes from './routes/commentroutes.js';
-import likeRoutes from "./routes/likeroutes.js"; // Adjust path as needed
+import likeRoutes from "./routes/likeroutes.js";
 import fs from 'fs';
-import ratingRoutes from "./routes/ratingroutes.js"; // adjust path if needed
+import ratingRoutes from "./routes/ratingroutes.js";
 import dietPlanRoutes from "./routes/dietplanroutes.js";
 import foodItemRoutes from "./routes/fooditemroutes.js";
 import planfooditemRoutes from './routes/planfooditemroutes.js';
@@ -30,20 +30,26 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// CORS configuration
+// ✅ CORS configuration
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000', // React frontend URL
   credentials: true
 }));
 
 app.use(express.json());
+
+// ✅ Root route (important for Render health check & user confirmation)
+app.get("/", (req, res) => {
+  res.send("✅ Virtual Cook Backend is running! Use /api/... endpoints.");
+});
+
+// ✅ API routes
 console.log("Loading routes...");
 const routePath = path.join(__dirname, 'routes');
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/videos', videoRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/user-diet-plan', userdietplanRoutes);
-
 app.use("/api/likes", likeRoutes);
 app.use("/api/ratings", ratingRoutes);
 app.use("/api/diet-plans", dietPlanRoutes);
@@ -56,18 +62,22 @@ app.use('/api/recipe-ingredients', recipeingredientRoutes);
 app.use('/api/recipe-tags', recipetagRoutes);
 app.use('/api/recipe-tag-mappings', recipetagmappingRoutes);
 app.use('/api/user-pantry', userpantryRoutes);
-fs.readdirSync(routePath).forEach(file => {
-  console.log(`Checking file: ${file}`);
-});
-// ✅ Serve frontend (Next.js build) from here if desired
-const frontendPath = path.resolve(__dirname, '../frontend/.next');
 
+// log which route files are loaded
+fs.readdirSync(routePath).forEach(file => {
+  console.log(`Loaded route file: ${file}`);
+});
+
+// ✅ Optionally serve frontend build if needed
+const frontendPath = path.resolve(__dirname, '../frontend/.next');
 app.use(express.static(frontendPath));
 
+// If you plan to serve frontend directly from backend, uncomment & adjust:
 // app.get('*', (req, res) => {
-//   res.sendFile(path.join(frontendPath, 'app/page.jsx')); // Use correct path if needed
+//   res.sendFile(path.join(frontendPath, 'index.html')); 
 // });
 
-app.listen(5000, () => {
-  console.log('Server running on port 5000');
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
