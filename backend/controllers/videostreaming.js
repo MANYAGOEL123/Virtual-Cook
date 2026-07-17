@@ -2,7 +2,6 @@ import Video from '../models/videostreaming.js';
 import fs from 'fs';
 import path from 'path';
 
-// ✅ Upload a new video
 export const uploadVideo = async (req, res) => {
   try {
     const { recipeId, uploaderId, duration, description } = req.body;
@@ -23,7 +22,6 @@ export const uploadVideo = async (req, res) => {
   }
 };
 
-// ✅ Stream video by ID
 export const streamVideo = async (req, res) => {
   try {
     const video = await Video.findById(req.params.id);
@@ -39,7 +37,7 @@ export const streamVideo = async (req, res) => {
     }
 
     const start = Number(range.replace(/\D/g, ''));
-    const CHUNK_SIZE = 1 * 1e6; // 1MB
+    const CHUNK_SIZE = 1 * 1e6; 
     const end = Math.min(start + CHUNK_SIZE, fileSize - 1);
 
     const contentLength = end - start + 1;
@@ -54,7 +52,6 @@ export const streamVideo = async (req, res) => {
     const videoStream = fs.createReadStream(filePath, { start, end });
     videoStream.pipe(res);
 
-    // Update view count
     await Video.findByIdAndUpdate(video._id, { $inc: { views: 1 } });
 
   } catch (err) {
@@ -62,10 +59,10 @@ export const streamVideo = async (req, res) => {
   }
 };
 
-// ✅ Get all approved videos
 export const getApprovedVideos = async (req, res) => {
   try {
     const videos = await Video.find({ status: 'approved' })
+      .sort({ createdAt: -1 })
       .populate('recipeId uploaderId');
     res.json(videos);
   } catch (err) {
@@ -73,10 +70,11 @@ export const getApprovedVideos = async (req, res) => {
   }
 };
 
-// ✅ Get a video by ID (with metadata)
 export const getVideoById = async (req, res) => {
+
   try {
     const video = await Video.findById(req.params.id)
+      .sort({ createdAt: -1 })
       .populate('recipeId uploaderId');
     if (!video) return res.status(404).json({ message: 'Video not found' });
     res.json(video);
@@ -85,7 +83,7 @@ export const getVideoById = async (req, res) => {
   }
 };
 
-// ✅ Approve a video
+
 export const approveVideo = async (req, res) => {
   try {
     const video = await Video.findByIdAndUpdate(
@@ -100,13 +98,13 @@ export const approveVideo = async (req, res) => {
   }
 };
 
-// ✅ Delete a video
+
 export const deleteVideo = async (req, res) => {
   try {
     const video = await Video.findByIdAndDelete(req.params.id);
     if (!video) return res.status(404).json({ message: 'Video not found' });
 
-    // Optionally delete the actual file
+    
     const filePath = path.join(__dirname, '..', video.videoUrl);
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
 

@@ -36,7 +36,7 @@ export default function MealPlanner() {
     setMealPlan(null);
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/generate-mealplan", {
+      const res = await fetch("https://virtual-cook-backend.onrender.com/generate-mealplan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

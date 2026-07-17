@@ -14,7 +14,7 @@ export default function RecipeDetail({ recipeId, onBack }) {
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/recipes/${recipeId}`)
+        const res = await fetch(`https://backend-w5t0.onrender.com/api/recipes/${recipeId}`)
         if (!res.ok) throw new Error("Failed to fetch recipe.")
         const data = await res.json()
         setRecipe(data)

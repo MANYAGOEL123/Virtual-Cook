@@ -62,7 +62,7 @@ export default function DietPlanner() {
         budget_level: budgetLevel
       }
 
-      const res = await fetch("http://localhost:8000/generate-dietplan", {
+      const res = await fetch("https://virtual-cook-backend.onrender.com/generate-dietplan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

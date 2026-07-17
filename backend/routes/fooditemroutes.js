@@ -6,15 +6,15 @@ import {
   updateFoodItem,
   deleteFoodItem
 } from "../controllers/fooditemcontroller.js";
-import { protect } from "../upload/authmiddleware.js"; // Optional for admin access
-
+import { protect } from "../upload/authmiddleware.js"; 
+import {athorize} from "../upload/authorize.js"
 const router = express.Router();
 
-router.post("/", protect, createFoodItem);      // Add food item
-router.get("/", getAllFoodItems);              // Get all items (with optional filter)
-router.get("/:id", getFoodItemById);           // Get one item
-router.put("/:id", protect, updateFoodItem);    // Update
-router.delete("/:id", protect, deleteFoodItem); // Delete
+router.post("/", protect,authorize("admin"), createFoodItem);      
+router.get("/", getAllFoodItems);             
+router.get("/:id", getFoodItemById);           
+router.put("/:id", protect,authorize("admin"), updateFoodItem);    
+router.delete("/:id", protect, authorize("admin"), deleteFoodItem);
 
 export default router;
 

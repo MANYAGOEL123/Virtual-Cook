@@ -2,14 +2,13 @@ import User from "../models/usermodels.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-// ✅ Generate JWT Token
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
     expiresIn: "7d"
   });
 };
 
-// ✅ Register a new user
+
 export const registerUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -40,7 +39,7 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// ✅ Login
+
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -64,7 +63,7 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// ✅ Get current user's profile
+
 export const getProfile = async (req, res) => {
   const user = await User.findById(req.user._id).select("-passwordHash");
 
@@ -75,7 +74,7 @@ export const getProfile = async (req, res) => {
   res.status(200).json({ success: true, user });
 };
 
-// ✅ Update profile (username, profile picture, etc.)
+
 export const updateProfile = async (req, res) => {
   try {
     const updates = req.body;
@@ -89,7 +88,7 @@ export const updateProfile = async (req, res) => {
   }
 };
 
-// ✅ Save or unsave a recipe
+
 export const toggleSavedRecipe = async (req, res) => {
   try {
     const { recipeId } = req.body;
@@ -113,7 +112,30 @@ export const toggleSavedRecipe = async (req, res) => {
   }
 };
 
-// ✅ Get all users (optional, for admin)
+export const makeAdmin = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    user.role = "admin";
+
+    await user.save();
+
+    res.json({
+      message: "User promoted to admin successfully."
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error"
+    });
+  }
+};
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select("-passwordHash");

@@ -1,12 +1,12 @@
-import Like from "../models/like.js"; // Adjust path if needed
+import Like from "../models/like.js"; 
 
-// ✅ Add a like
+
 export const addLike = async (req, res) => {
   try {
     const { entityType, entityId } = req.body;
     const userId = req.user._id;
 
-    // Check if the like already exists
+    
     const existingLike = await Like.findOne({ entityType, entityId, userId });
 
     if (existingLike) {
@@ -22,7 +22,6 @@ export const addLike = async (req, res) => {
   }
 };
 
-// ✅ Remove a like
 export const removeLike = async (req, res) => {
   try {
     const { entityType, entityId } = req.body;
@@ -40,7 +39,6 @@ export const removeLike = async (req, res) => {
   }
 };
 
-// ✅ Get all likes for an entity
 export const getLikes = async (req, res) => {
   try {
     const { entityType, entityId } = req.params;
@@ -53,7 +51,7 @@ export const getLikes = async (req, res) => {
   }
 };
 
-// ✅ Check if user has liked (optional helper)
+
 export const hasUserLiked = async (req, res) => {
   try {
     const { entityType, entityId } = req.params;

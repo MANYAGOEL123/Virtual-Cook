@@ -17,8 +17,8 @@ const recipeSchema = new mongoose.Schema({
 
   instructions: [String],
 
-  cookingTime: Number, // in minutes
-  prepTime: Number,    // in minutes
+  cookingTime: Number, 
+  prepTime: Number,   
   servings: Number,
 
   authorId: {
@@ -44,7 +44,7 @@ const recipeSchema = new mongoose.Schema({
     trim: true
   },
 
-  dietaryRestrictions: [String], // e.g., ["vegetarian", "gluten-free"]
+  dietaryRestrictions: [String], 
 
   nutritionalInfo: {
     calories: Number,
@@ -69,7 +69,7 @@ const recipeSchema = new mongoose.Schema({
     default: "pending"
   }
 }, {
-  timestamps: true // adds createdAt and updatedAt
+  timestamps: true 
 });
 
 

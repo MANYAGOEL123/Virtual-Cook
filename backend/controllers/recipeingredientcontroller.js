@@ -1,6 +1,6 @@
 import RecipeIngredient from '../models/recipeingredient.js';
 
-// Create a new recipe ingredient
+
 export const createRecipeIngredient = async (req, res) => {
   try {
     const newItem = new RecipeIngredient(req.body);
@@ -11,7 +11,7 @@ export const createRecipeIngredient = async (req, res) => {
   }
 };
 
-// Get all ingredients for a specific recipe
+
 export const getIngredientsByRecipe = async (req, res) => {
   try {
     const ingredients = await RecipeIngredient.find({ recipe_id: req.params.recipeId })
@@ -22,7 +22,7 @@ export const getIngredientsByRecipe = async (req, res) => {
   }
 };
 
-// Update a recipe ingredient
+
 export const updateRecipeIngredient = async (req, res) => {
   try {
     const updated = await RecipeIngredient.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -32,7 +32,7 @@ export const updateRecipeIngredient = async (req, res) => {
   }
 };
 
-// Delete a recipe ingredient
+
 export const deleteRecipeIngredient = async (req, res) => {
   try {
     await RecipeIngredient.findByIdAndDelete(req.params.id);

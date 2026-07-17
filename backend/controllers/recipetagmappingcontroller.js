@@ -1,6 +1,6 @@
 import RecipeTagMapping from '../models/recipetagmapping.js';
 
-// Create new mapping
+
 export const createRecipeTagMapping = async (req, res) => {
   try {
     const newMapping = new RecipeTagMapping(req.body);
@@ -11,7 +11,7 @@ export const createRecipeTagMapping = async (req, res) => {
   }
 };
 
-// Get all mappings
+
 export const getAllRecipeTagMappings = async (req, res) => {
   try {
     const mappings = await RecipeTagMapping.find()
@@ -23,7 +23,7 @@ export const getAllRecipeTagMappings = async (req, res) => {
   }
 };
 
-// Get all tags for a specific recipe
+
 export const getTagsByRecipe = async (req, res) => {
   try {
     const mappings = await RecipeTagMapping.find({ recipe_id: req.params.recipeId })
@@ -34,7 +34,7 @@ export const getTagsByRecipe = async (req, res) => {
   }
 };
 
-// Update mapping
+
 export const updateRecipeTagMapping = async (req, res) => {
   try {
     const updated = await RecipeTagMapping.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -44,7 +44,7 @@ export const updateRecipeTagMapping = async (req, res) => {
   }
 };
 
-// Delete mapping
+
 export const deleteRecipeTagMapping = async (req, res) => {
   try {
     await RecipeTagMapping.findByIdAndDelete(req.params.id);

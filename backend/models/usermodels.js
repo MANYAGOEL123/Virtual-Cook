@@ -23,6 +23,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  role: {
+  type: String,
+  enum: ["user", "admin"],
+  default: "user"
+},
   savedRecipeIds: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -30,21 +35,18 @@ const userSchema = new mongoose.Schema({
     }
   ]
 }, {
-  timestamps: true // adds createdAt and updatedAt
+  timestamps: true 
 });
 
-// 🔒 Hash password before saving
 userSchema.pre('save', async function (next) {
   if (!this.isModified('passwordHash')) return next();
   this.passwordHash = await bcrypt.hash(this.passwordHash, 10);
   next();
 });
-
-// 🔐 Method to compare password
 userSchema.methods.comparePassword = function (password) {
   return bcrypt.compare(password, this.passwordHash);
 };
 
-// ✅ Export model (default)
+
 const User = mongoose.model("User", userSchema);
 export default User;

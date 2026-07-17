@@ -1,6 +1,6 @@
 import FoodItem from "../models/fooditem.js"; // Adjust path if needed
 
-// ✅ Create a new food item
+
 export const createFoodItem = async (req, res) => {
   try {
     const {
@@ -31,7 +31,7 @@ export const createFoodItem = async (req, res) => {
   }
 };
 
-// ✅ Get all food items (with optional category filter)
+
 export const getAllFoodItems = async (req, res) => {
   try {
     const { category } = req.query;
@@ -45,7 +45,7 @@ export const getAllFoodItems = async (req, res) => {
   }
 };
 
-// ✅ Get a single food item by ID
+
 export const getFoodItemById = async (req, res) => {
   try {
     const foodItem = await FoodItem.findById(req.params.id);
@@ -60,7 +60,7 @@ export const getFoodItemById = async (req, res) => {
   }
 };
 
-// ✅ Update a food item
+
 export const updateFoodItem = async (req, res) => {
   try {
     const foodItem = await FoodItem.findById(req.params.id);
@@ -78,7 +78,7 @@ export const updateFoodItem = async (req, res) => {
   }
 };
 
-// ✅ Delete a food item
+
 export const deleteFoodItem = async (req, res) => {
   try {
     const foodItem = await FoodItem.findById(req.params.id);

@@ -1,6 +1,5 @@
-import DietPlan from "../models/dietplan.js"; // Adjust path as needed
+import DietPlan from "../models/dietplan.js"; 
 
-// ✅ Create a new diet plan
 export const createDietPlan = async (req, res) => {
   try {
     const {
@@ -27,7 +26,7 @@ export const createDietPlan = async (req, res) => {
   }
 };
 
-// ✅ Get all diet plans (optionally filter by difficulty or user)
+
 export const getAllDietPlans = async (req, res) => {
   try {
     const filters = {};
@@ -48,7 +47,7 @@ export const getAllDietPlans = async (req, res) => {
   }
 };
 
-// ✅ Get a single diet plan by ID
+
 export const getDietPlanById = async (req, res) => {
   try {
     const plan = await DietPlan.findById(req.params.id).populate("creator", "name email");
@@ -63,7 +62,7 @@ export const getDietPlanById = async (req, res) => {
   }
 };
 
-// ✅ Update a diet plan
+
 export const updateDietPlan = async (req, res) => {
   try {
     const plan = await DietPlan.findById(req.params.id);
@@ -72,7 +71,7 @@ export const updateDietPlan = async (req, res) => {
       return res.status(404).json({ success: false, message: "Diet plan not found" });
     }
 
-    // Ensure only the creator can update
+    
     if (plan.creator.toString() !== req.user._id.toString()) {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
@@ -87,7 +86,7 @@ export const updateDietPlan = async (req, res) => {
   }
 };
 
-// ✅ Delete a diet plan
+
 export const deleteDietPlan = async (req, res) => {
   try {
     const plan = await DietPlan.findById(req.params.id);
@@ -96,7 +95,6 @@ export const deleteDietPlan = async (req, res) => {
       return res.status(404).json({ success: false, message: "Diet plan not found" });
     }
 
-    // Ensure only the creator can delete
     if (plan.creator.toString() !== req.user._id.toString()) {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }

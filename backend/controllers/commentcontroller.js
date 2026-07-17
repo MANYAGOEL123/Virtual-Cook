@@ -1,10 +1,10 @@
-import Comment from '../models/comment.js'; // Adjust the path as needed
+import Comment from '../models/comment.js'; 
 
-// Create a comment
+
 export const createComment = async (req, res) => {
   try {
     const { entityType, entityId, text } = req.body;
-    const userId = req.user._id; // Assumes user is authenticated and user ID is available
+    const userId = req.user._id; 
 
     const newComment = new Comment({
       entityType,
@@ -20,7 +20,7 @@ export const createComment = async (req, res) => {
   }
 };
 
-// Get comments for a specific recipe or video
+
 export const getCommentsByEntity = async (req, res) => {
   try {
     const { entityType, entityId } = req.params;
@@ -28,7 +28,7 @@ export const getCommentsByEntity = async (req, res) => {
     const comments = await Comment.find({
       entityType,
       entityId
-    }).populate("userId", "name email"); // adjust fields based on User model
+    }).populate("userId", "name email"); 
 
     res.status(200).json({ success: true, comments });
   } catch (error) {
@@ -36,7 +36,7 @@ export const getCommentsByEntity = async (req, res) => {
   }
 };
 
-// Delete a comment by ID
+
 export const deleteComment = async (req, res) => {
   try {
     const { id } = req.params;
@@ -46,7 +46,7 @@ export const deleteComment = async (req, res) => {
       return res.status(404).json({ success: false, message: "Comment not found" });
     }
 
-    // Optional: only allow the comment's author or an admin to delete
+    
     if (comment.userId.toString() !== req.user._id.toString()) {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }

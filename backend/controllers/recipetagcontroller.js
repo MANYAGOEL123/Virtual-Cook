@@ -1,6 +1,6 @@
 import RecipeTag from '../models/recipetag.js';
 
-// Create a new tag
+
 export const createRecipeTag = async (req, res) => {
   try {
     const newTag = new RecipeTag(req.body);
@@ -11,7 +11,7 @@ export const createRecipeTag = async (req, res) => {
   }
 };
 
-// Get all tags
+
 export const getAllRecipeTags = async (req, res) => {
   try {
     const tags = await RecipeTag.find();
@@ -21,7 +21,6 @@ export const getAllRecipeTags = async (req, res) => {
   }
 };
 
-// Get single tag by ID
 export const getRecipeTagById = async (req, res) => {
   try {
     const tag = await RecipeTag.findById(req.params.id);
@@ -34,7 +33,7 @@ export const getRecipeTagById = async (req, res) => {
   }
 };
 
-// Update a tag
+
 export const updateRecipeTag = async (req, res) => {
   try {
     const updated = await RecipeTag.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -44,7 +43,6 @@ export const updateRecipeTag = async (req, res) => {
   }
 };
 
-// Delete a tag
 export const deleteRecipeTag = async (req, res) => {
   try {
     await RecipeTag.findByIdAndDelete(req.params.id);

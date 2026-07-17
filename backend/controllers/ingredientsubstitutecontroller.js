@@ -1,6 +1,6 @@
 import IngredientSubstitute from '../models/ingredientsubstitute.js';
 
-// Create a new substitute
+
 export const createIngredientSubstitute = async (req, res) => {
   try {
     const newSubstitute = new IngredientSubstitute(req.body);
@@ -11,7 +11,7 @@ export const createIngredientSubstitute = async (req, res) => {
   }
 };
 
-// Get all substitutes
+
 export const getAllIngredientSubstitutes = async (req, res) => {
   try {
     const substitutes = await IngredientSubstitute.find()
@@ -23,7 +23,7 @@ export const getAllIngredientSubstitutes = async (req, res) => {
   }
 };
 
-// Get substitutes for a specific ingredient
+
 export const getSubstitutesByIngredient = async (req, res) => {
   try {
     const substitutes = await IngredientSubstitute.find({ ingredient_id: req.params.ingredientId })
@@ -34,7 +34,6 @@ export const getSubstitutesByIngredient = async (req, res) => {
   }
 };
 
-// Update a substitute
 export const updateIngredientSubstitute = async (req, res) => {
   try {
     const updated = await IngredientSubstitute.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -44,7 +43,7 @@ export const updateIngredientSubstitute = async (req, res) => {
   }
 };
 
-// Delete a substitute
+
 export const deleteIngredientSubstitute = async (req, res) => {
   try {
     await IngredientSubstitute.findByIdAndDelete(req.params.id);

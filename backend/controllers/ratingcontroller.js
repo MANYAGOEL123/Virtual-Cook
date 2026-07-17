@@ -1,6 +1,5 @@
-import Rating from "../models/rating.js"; // adjust path if needed
+import Rating from "../models/rating.js"; 
 
-// ✅ Add or update a rating
 export const addOrUpdateRating = async (req, res) => {
   try {
     const { entityType, entityId, score } = req.body;
@@ -10,7 +9,7 @@ export const addOrUpdateRating = async (req, res) => {
       return res.status(400).json({ message: "Rating must be between 1 and 5" });
     }
 
-    // Update if already rated
+    
     let rating = await Rating.findOneAndUpdate(
       { entityType, entityId, userId },
       { score },
@@ -18,7 +17,7 @@ export const addOrUpdateRating = async (req, res) => {
     );
 
     if (!rating) {
-      // Create if doesn't exist
+    
       rating = new Rating({ entityType, entityId, userId, score });
       await rating.save();
     }
@@ -29,7 +28,7 @@ export const addOrUpdateRating = async (req, res) => {
   }
 };
 
-// ✅ Get all ratings for an entity
+
 export const getRatings = async (req, res) => {
   try {
     const { entityType, entityId } = req.params;
@@ -42,7 +41,7 @@ export const getRatings = async (req, res) => {
   }
 };
 
-// ✅ Get average rating for an entity
+
 export const getAverageRating = async (req, res) => {
   try {
     const { entityType, entityId } = req.params;
@@ -73,7 +72,7 @@ export const getAverageRating = async (req, res) => {
   }
 };
 
-// ✅ (Optional) Delete user's rating
+
 export const deleteRating = async (req, res) => {
   try {
     const { entityType, entityId } = req.body;

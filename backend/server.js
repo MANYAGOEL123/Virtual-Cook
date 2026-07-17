@@ -30,9 +30,9 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// ✅ CORS configuration
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000', // React frontend URL
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000', 
   credentials: true
 }));
 
@@ -42,8 +42,6 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("✅ Virtual Cook Backend is running! Use /api/... endpoints.");
 });
-
-// ✅ API routes
 console.log("Loading routes...");
 const routePath = path.join(__dirname, 'routes');
 app.use('/api/recipes', recipeRoutes);
@@ -72,10 +70,7 @@ fs.readdirSync(routePath).forEach(file => {
 const frontendPath = path.resolve(__dirname, '../frontend/.next');
 app.use(express.static(frontendPath));
 
-// If you plan to serve frontend directly from backend, uncomment & adjust:
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(frontendPath, 'index.html')); 
-// });
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

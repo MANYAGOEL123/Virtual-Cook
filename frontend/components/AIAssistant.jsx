@@ -27,7 +27,7 @@ export default function AIAssistant() {
 
     setIsLoading(true)
     try {
-      const response = await fetch("http://localhost:8000/generate-recipe", {
+      const response = await fetch("https://virtual-cook-backend.onrender.com/generate-recipe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ingredients }),
@@ -47,7 +47,7 @@ export default function AIAssistant() {
 
       setIsLoading(true)
       try {
-        const response = await fetch("http://localhost:8000/chat", {
+        const response = await fetch("https://virtual-cook-backend.onrender.com/generate-recipe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

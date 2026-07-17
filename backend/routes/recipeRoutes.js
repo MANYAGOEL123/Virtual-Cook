@@ -1,4 +1,5 @@
 import express from 'express';
+import { protect } from '../upload/authmiddleware.js';
 import {
   getAllRecipes,
   getRecipeById,
@@ -9,9 +10,9 @@ import {
 
 const router = express.Router();
 
-router.get('/', getAllRecipes);          // GET /api/recipes
-router.get('/:id', getRecipeById);       // GET /api/recipes/:id
-router.post('/', createRecipe);          // POST /api/recipes
-router.put('/:id', updateRecipe);        // PUT /api/recipes/
-router.delete('/:id',deleteRecipe);
+router.get('/', getAllRecipes);         
+router.get('/:id', getRecipeById);       
+router.post('/',protect, createRecipe);          
+router.put('/:id', protect, updateRecipe);        
+router.delete('/:id', protect, deleteRecipe);
 export default router;
